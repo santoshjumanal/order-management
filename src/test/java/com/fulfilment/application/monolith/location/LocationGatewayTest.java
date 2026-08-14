@@ -12,15 +12,15 @@ public class LocationGatewayTest {
 
   @Test
   public void testWhenResolveExistingLocationShouldReturn() {
-    Location location = locationGateway.resolveByIdentifier(ZWOLLE-001);
+    Location location = locationGateway.resolveByIdentifier("ZWOLLE-001");
 
-    assertEquals(ZWOLLE-001, location.identification);
+    assertEquals("ZWOLLE-001", location.identification);
     assertEquals(1, location.maxNumberOfWarehouses);
     assertEquals(40, location.maxCapacity);
   }
 
   @Test
   public void testWhenResolveNonExistingLocationShouldReturnNull() {
-    assertNull(locationGateway.resolveByIdentifier(NON-EXISTING-001));
+    assertNull(locationGateway.resolveByIdentifier("NON-EXISTING-001"));
   }
 }

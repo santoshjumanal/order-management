@@ -1,43 +1,35 @@
 package com.fulfilment.application.monolith.warehouses.domain.usecases;
 
-import static com.fulfilment.application.monolith.warehouses.domain.usecases.WarehouseTestDoubles.warehouse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
-import com.fulfilment.application.monolith.warehouses.domain.usecases.WarehouseTestDoubles.InMemoryWarehouseStore;
+import com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation;
+import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseStore;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.time.LocalDateTime;
 
-public class ArchiveWarehouseUseCaseTest {
+@ApplicationScoped
+public class ArchiveWarehouseUseCase implements ArchiveWarehouseOperation {
 
-  private InMemoryWarehouseStore store;
-  private ArchiveWarehouseUseCase useCase;
+    private final WarehouseStore warehouseStore;
 
-  @BeforeEach
-  void setUp() {
-    store = new InMemoryWarehouseStore();
-    useCase = new ArchiveWarehouseUseCase(store);
-  }
+    public ArchiveWarehouseUseCase(WarehouseStore warehouseStore) {
+        this.warehouseStore = warehouseStore;
+    }
 
-  @Test
-  void shouldArchiveExistingWarehouse() {
-    Warehouse existing = warehouse("MWH.001", "AMSTERDAM-001", 40, 20);
-    store.create(existing);
+    @Override
+    public void archive(Warehouse warehouse) {
+        Warehouse existing = warehouseStore.findByBusinessUnitCode(warehouse.getBusinessUnitCode());
 
-    useCase.archive(warehouse("MWH.001", "AMSTERDAM-001", 40, 20));
+        if (existing == null) {
+            throw new WebApplicationException(
+                    "Warehouse with business unit code "
+                            + warehouse.getBusinessUnitCode()
+                            + " does not exist or is already archived.",
+                    404);
+        }
 
-    assertNotNull(existing.archivedAt);
-    // Once archived it is no longer returned as active.
-    assertNull(store.findByBusinessUnitCode("MWH.001"));
-  }
+        existing.setArchivedAt(LocalDateTime.now());
 
-  @Test
-  void shouldRejectArchivingNonExistingWarehouse() {
-    assertThrows(
-            WebApplicationException.class,
-            () -> useCase.archive(warehouse("MWH.999", "AMSTERDAM-001", 40, 20)));
-  }
+        warehouseStore.update(existing);
+    }
 }
