@@ -39,9 +39,9 @@ public class ReplaceWarehouseUseCaseTest {
 
         Warehouse active = store.findByBusinessUnitCode("MWH.001");
         assertNotNull(active);
-        assertEquals(60, active.capacity);
+        assertEquals(60, active.getCapacity());
         // The previous instance should now be archived.
-        long archived = store.warehouses.stream().filter(w -> w.archivedAt != null).count();
+        long archived = store.warehouses.stream().filter(w -> w.getArchivedAt() != null).count();
         assertEquals(1, archived);
     }
 

@@ -27,28 +27,28 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
   @Override
   public void replace(Warehouse newWarehouse) {
     // The warehouse being replaced must currently exist and be active
-    Warehouse previous = warehouseStore.findByBusinessUnitCode(newWarehouse.businessUnitCode);
+    Warehouse previous = warehouseStore.findByBusinessUnitCode(newWarehouse.getBusinessUnitCode());
     if (previous == null) {
       throw new WebApplicationException(
               "Warehouse with business unit code "
-                      + newWarehouse.businessUnitCode
+                      + newWarehouse.getBusinessUnitCode()
                       + " does not exist.",
               404);
     }
 
     // Location Validation: it must be an existing, valid location
-    Location location = locationResolver.resolveByIdentifier(newWarehouse.location);
+    Location location = locationResolver.resolveByIdentifier(newWarehouse.getLocation());
     if (location == null) {
       throw new WebApplicationException(
-              "Location " + newWarehouse.location + " is not a valid location.", 400);
+              "Location " + newWarehouse.getLocation() + " is not a valid location.", 400);
     }
 
     // The warehouse being replaced is about to be archived, so it is excluded when checking
     // feasibility/capacity for the new one at that location
     List<Warehouse> otherWarehousesAtLocation =
             warehouseStore.getAll().stream()
-                    .filter(w -> w.location.equals(location.identification))
-                    .filter(w -> !w.businessUnitCode.equals(previous.businessUnitCode))
+                    .filter(w -> w.getLocation().equals(location.identification))
+                    .filter(w -> !w.getBusinessUnitCode().equals(previous.getBusinessUnitCode()))
                     .toList();
 
     // Warehouse Creation Feasibility
@@ -60,28 +60,28 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
               400);
     }
 
-    if (newWarehouse.capacity == null || newWarehouse.capacity <= 0) {
+    if (newWarehouse.getCapacity() == null || newWarehouse.getCapacity() <= 0) {
       throw new WebApplicationException("Warehouse capacity must be a positive number.", 400);
     }
-    if (newWarehouse.stock == null || newWarehouse.stock < 0) {
+    if (newWarehouse.getStock() == null || newWarehouse.getStock() < 0) {
       throw new WebApplicationException("Warehouse stock must not be negative.", 400);
     }
 
     // Capacity and Stock Validation
-    int alreadyUsedCapacity = otherWarehousesAtLocation.stream().mapToInt(w -> w.capacity).sum();
-    if (alreadyUsedCapacity + newWarehouse.capacity > location.maxCapacity) {
+    int alreadyUsedCapacity = otherWarehousesAtLocation.stream().mapToInt(w -> w.getCapacity()).sum();
+    if (alreadyUsedCapacity + newWarehouse.getCapacity() > location.maxCapacity) {
       throw new WebApplicationException(
               "Warehouse capacity exceeds the maximum capacity available for location "
                       + location.identification,
               400);
     }
-    if (newWarehouse.stock > newWarehouse.capacity) {
+    if (newWarehouse.getStock() > newWarehouse.getCapacity()) {
       throw new WebApplicationException("Warehouse stock cannot exceed its own capacity.", 400);
     }
 
     // Capacity Accommodation: the new warehouse must be able to accommodate the stock
     // currently held by the warehouse being replaced
-    if (newWarehouse.capacity < previous.stock) {
+    if (newWarehouse.getCapacity() < previous.getStock()) {
       throw new WebApplicationException(
               "The new warehouse's capacity cannot accommodate the stock of the warehouse being"
                       + " replaced.",
@@ -89,16 +89,16 @@ public class ReplaceWarehouseUseCase implements ReplaceWarehouseOperation {
     }
 
     // Stock Matching: the new warehouse's stock must match the stock of the previous warehouse
-    if (!newWarehouse.stock.equals(previous.stock)) {
+    if (!newWarehouse.getStock().equals(previous.getStock())) {
       throw new WebApplicationException(
               "The new warehouse's stock must match the stock of the warehouse being replaced.", 400);
     }
 
-    previous.archivedAt = LocalDateTime.now();
+    previous.setArchivedAt(LocalDateTime.now());
     warehouseStore.update(previous);
 
-    newWarehouse.createdAt = LocalDateTime.now();
-    newWarehouse.archivedAt = null;
+    newWarehouse.setCreatedAt(LocalDateTime.now());
+    newWarehouse.setArchivedAt(null);
     warehouseStore.create(newWarehouse);
   }
 }

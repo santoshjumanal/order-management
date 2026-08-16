@@ -17,13 +17,17 @@ import java.util.List;
 @RequestScoped
 public class WarehouseResourceImpl implements WarehouseResource {
 
-  @Inject private WarehouseRepository warehouseRepository;
+  @Inject
+  private WarehouseRepository warehouseRepository;
 
-  @Inject private CreateWarehouseOperation createWarehouseOperation;
+  @Inject
+  private CreateWarehouseOperation createWarehouseOperation;
 
-  @Inject private ArchiveWarehouseOperation archiveWarehouseOperation;
+  @Inject
+  private ArchiveWarehouseOperation archiveWarehouseOperation;
 
-  @Inject private ReplaceWarehouseOperation replaceWarehouseOperation;
+  @Inject
+  private ReplaceWarehouseOperation replaceWarehouseOperation;
 
   @Override
   public List<Warehouse> listAllWarehousesUnits() {

@@ -31,12 +31,12 @@ public class DbWarehouse {
 
   public Warehouse toWarehouse() {
     var warehouse = new Warehouse();
-    warehouse.businessUnitCode = this.businessUnitCode;
-    warehouse.location = this.location;
-    warehouse.capacity = this.capacity;
-    warehouse.stock = this.stock;
-    warehouse.createdAt = this.createdAt;
-    warehouse.archivedAt = this.archivedAt;
+    warehouse.setBusinessUnitCode(this.businessUnitCode);
+    warehouse.setLocation(this.location);
+    warehouse.setCapacity(this.capacity);
+    warehouse.setStock(this.stock);
+    warehouse.setCreatedAt(this.createdAt);
+    warehouse.setArchivedAt(this.archivedAt);
     return warehouse;
   }
 }

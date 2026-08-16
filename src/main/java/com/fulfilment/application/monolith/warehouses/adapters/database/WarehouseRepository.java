@@ -20,12 +20,12 @@ public class WarehouseRepository implements WarehouseStore, PanacheRepository<Db
   @Override
   public void create(Warehouse warehouse) {
     var dbWarehouse = new DbWarehouse();
-    dbWarehouse.businessUnitCode = warehouse.businessUnitCode;
-    dbWarehouse.location = warehouse.location;
-    dbWarehouse.capacity = warehouse.capacity;
-    dbWarehouse.stock = warehouse.stock;
-    dbWarehouse.createdAt = warehouse.createdAt != null ? warehouse.createdAt : LocalDateTime.now();
-    dbWarehouse.archivedAt = warehouse.archivedAt;
+    dbWarehouse.businessUnitCode = warehouse.getBusinessUnitCode();
+    dbWarehouse.location = warehouse.getLocation();
+    dbWarehouse.capacity = warehouse.getCapacity();
+    dbWarehouse.stock = warehouse.getStock();
+    dbWarehouse.createdAt = warehouse.getCreatedAt() != null ? warehouse.getCreatedAt() : LocalDateTime.now();
+    dbWarehouse.archivedAt = warehouse.getArchivedAt();
 
     this.persist(dbWarehouse);
   }
@@ -37,19 +37,19 @@ public class WarehouseRepository implements WarehouseStore, PanacheRepository<Db
     // fetched while still active, we match on the currently-active row to avoid touching a
     // stale, already-archived record with the same code.
     DbWarehouse entity =
-            this.find("businessUnitCode = ?1 and archivedAt is null", warehouse.businessUnitCode)
+            this.find("businessUnitCode = ?1 and archivedAt is null", warehouse.getBusinessUnitCode())
                     .firstResult();
 
     if (entity == null) {
       throw new WebApplicationException(
-              "Warehouse with business unit code " + warehouse.businessUnitCode + " does not exist.",
+              "Warehouse with business unit code " + warehouse.getBusinessUnitCode() + " does not exist.",
               404);
     }
 
-    entity.location = warehouse.location;
-    entity.capacity = warehouse.capacity;
-    entity.stock = warehouse.stock;
-    entity.archivedAt = warehouse.archivedAt;
+    entity.location = warehouse.getLocation();
+    entity.capacity = warehouse.getCapacity();
+    entity.stock = warehouse.getStock();
+    entity.archivedAt = warehouse.getArchivedAt();
 
     this.persist(entity);
   }
@@ -57,7 +57,7 @@ public class WarehouseRepository implements WarehouseStore, PanacheRepository<Db
   @Override
   public void remove(Warehouse warehouse) {
     DbWarehouse entity =
-            this.find("businessUnitCode = ?1 and archivedAt is null", warehouse.businessUnitCode)
+            this.find("businessUnitCode = ?1 and archivedAt is null", warehouse.getBusinessUnitCode())
                     .firstResult();
 
     if (entity != null) {

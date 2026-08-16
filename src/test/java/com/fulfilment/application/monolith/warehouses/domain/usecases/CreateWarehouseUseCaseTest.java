@@ -31,9 +31,9 @@ public class CreateWarehouseUseCaseTest {
         useCase.create(warehouse("MWH.100", "AMSTERDAM-001", 50, 20));
 
         Warehouse created = store.findByBusinessUnitCode("MWH.100");
-        assertEquals("AMSTERDAM-001", created.location);
-        assertEquals(50, created.capacity);
-        assertEquals(20, created.stock);
+        assertEquals("AMSTERDAM-001", created.getLocation());
+        assertEquals(50, created.getCapacity());
+        assertEquals(20, created.getStock());
     }
 
     @Test

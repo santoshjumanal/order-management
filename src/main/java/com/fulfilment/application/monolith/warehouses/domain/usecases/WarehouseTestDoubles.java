@@ -17,7 +17,7 @@ final class WarehouseTestDoubles {
 
         @Override
         public List<Warehouse> getAll() {
-            return warehouses.stream().filter(w -> w.archivedAt == null).toList();
+            return warehouses.stream().filter(w -> w.getArchivedAt() == null).toList();
         }
 
         @Override
@@ -32,7 +32,7 @@ final class WarehouseTestDoubles {
 
         @Override
         public void remove(Warehouse warehouse) {
-            warehouses.removeIf(w -> w.businessUnitCode.equals(warehouse.businessUnitCode));
+            warehouses.removeIf(w -> w.getBusinessUnitCode().equals(warehouse.getBusinessUnitCode()));
         }
 
         @Override
