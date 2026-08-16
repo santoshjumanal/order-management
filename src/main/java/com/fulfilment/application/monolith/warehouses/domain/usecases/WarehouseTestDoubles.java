@@ -38,8 +38,8 @@ final class WarehouseTestDoubles {
         @Override
         public Warehouse findByBusinessUnitCode(String buCode) {
             return warehouses.stream()
-                    .filter(w -> w.archivedAt == null)
-                    .filter(w -> w.businessUnitCode.equals(buCode))
+                    .filter(w -> w.getArchivedAt() == null)
+                    .filter(w -> w.getBusinessUnitCode().equals(buCode))
                     .findFirst()
                     .orElse(null);
         }
@@ -65,10 +65,10 @@ final class WarehouseTestDoubles {
 
     static Warehouse warehouse(String buCode, String location, int capacity, int stock) {
         Warehouse w = new Warehouse();
-        w.businessUnitCode = buCode;
-        w.location = location;
-        w.capacity = capacity;
-        w.stock = stock;
+        w.setBusinessUnitCode(buCode);
+        w.setLocation(location);
+        w.setCapacity(capacity);
+        w.setStock(stock);
         return w;
     }
 }
