@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 public class CreateWarehouseUseCaseTest {
 
     private InMemoryWarehouseStore store;
-    private InMemoryLocationResolver locationResolver;
+    private WarehouseValidator locationResolver;
     private CreateWarehouseUseCase useCase;
 
     @BeforeEach

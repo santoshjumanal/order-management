@@ -61,6 +61,10 @@ final class WarehouseTestDoubles {
                     .findFirst()
                     .orElse(null);
         }
+
+        public void validateBusinessUnitCodeIsFree(String businessUnitCode) {
+
+        }
     }
 
     static Warehouse warehouse(String buCode, String location, int capacity, int stock) {
