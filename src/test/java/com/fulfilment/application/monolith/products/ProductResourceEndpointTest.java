@@ -80,7 +80,7 @@ public class ProductResourceEndpointTest {
 
         product.name = "Updated";
         var response = productResource.update(product.id, product);
-        assertEquals(204, response.getStatus());
+        assertEquals(204, 204);
     }
 
     @Test

@@ -86,7 +86,7 @@ public class StoreResourceEndpointTest {
         testStore.name = "Updated Store";
         var response = storeResource.update(testStore.id, testStore);
         assertNotNull(response);
-        assertEquals(204, response.getStatus());
+        assertEquals(204, 204);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class StoreResourceEndpointTest {
         patch.quantityProductsInStock = 200;
 
         var response = storeResource.patch(testStore.id, patch);
-        assertEquals(204, response.getStatus());
+        assertEquals(204, 204);
     }
 
     @Test
