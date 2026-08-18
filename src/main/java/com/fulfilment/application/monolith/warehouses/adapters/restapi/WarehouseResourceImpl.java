@@ -2,11 +2,11 @@ package com.fulfilment.application.monolith.warehouses.adapters.restapi;
 
 import com.fulfilment.application.monolith.warehouses.adapters.database.DbWarehouse;
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
+import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation;
 import com.fulfilment.application.monolith.warehouses.domain.ports.CreateWarehouseOperation;
 import com.fulfilment.application.monolith.warehouses.domain.ports.ReplaceWarehouseOperation;
-import com.warehouse.api.WarehouseResource;          // <-- MISSING, add this
-import com.warehouse.api.beans.Warehouse;             // <-- MISSING, add this
+import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseResource;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -95,8 +95,7 @@ public class WarehouseResourceImpl implements WarehouseResource {
     return warehouse;
   }
 
-  private Warehouse toWarehouseResponse(
-          com.fulfilment.application.monolith.warehouses.domain.models.Warehouse warehouse) {
+  private Warehouse toWarehouseResponse(Warehouse warehouse) {
     var response = new Warehouse();
     response.setBusinessUnitCode(warehouse.getBusinessUnitCode());
     response.setLocation(warehouse.getLocation());
