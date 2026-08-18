@@ -2,12 +2,12 @@ package com.fulfilment.application.monolith.warehouses.adapters.restapi;
 
 import com.fulfilment.application.monolith.warehouses.adapters.database.DbWarehouse;
 import com.fulfilment.application.monolith.warehouses.adapters.database.WarehouseRepository;
-import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.ArchiveWarehouseOperation;
 import com.fulfilment.application.monolith.warehouses.domain.ports.CreateWarehouseOperation;
-import jakarta.enterprise.context.RequestScoped;
 import com.fulfilment.application.monolith.warehouses.domain.ports.ReplaceWarehouseOperation;
-
+import com.warehouse.api.WarehouseResource;          // <-- MISSING, add this
+import com.warehouse.api.beans.Warehouse;             // <-- MISSING, add this
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -56,6 +56,8 @@ public class WarehouseResourceImpl implements WarehouseResource {
     DbWarehouse entity = findActiveById(id);
     archiveWarehouseOperation.archive(entity.toWarehouse());
   }
+
+  @Override
   @Transactional
   public Warehouse replaceTheCurrentActiveWarehouse(
           String businessUnitCode, @NotNull Warehouse data) {
@@ -83,7 +85,8 @@ public class WarehouseResourceImpl implements WarehouseResource {
     return entity;
   }
 
-  private Warehouse toDomainWarehouse(Warehouse data) {
+  private com.fulfilment.application.monolith.warehouses.domain.models.Warehouse toDomainWarehouse(
+          Warehouse data) {
     var warehouse = new com.fulfilment.application.monolith.warehouses.domain.models.Warehouse();
     warehouse.setBusinessUnitCode(data.getBusinessUnitCode());
     warehouse.setLocation(data.getLocation());
@@ -99,7 +102,6 @@ public class WarehouseResourceImpl implements WarehouseResource {
     response.setLocation(warehouse.getLocation());
     response.setCapacity(warehouse.getCapacity());
     response.setStock(warehouse.getStock());
-
     return response;
   }
 }

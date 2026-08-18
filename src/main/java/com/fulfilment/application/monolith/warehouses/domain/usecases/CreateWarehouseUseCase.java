@@ -3,6 +3,7 @@ package com.fulfilment.application.monolith.warehouses.domain.usecases;
 import com.fulfilment.application.monolith.warehouses.domain.models.Location;
 import com.fulfilment.application.monolith.warehouses.domain.models.Warehouse;
 import com.fulfilment.application.monolith.warehouses.domain.ports.CreateWarehouseOperation;
+import com.fulfilment.application.monolith.warehouses.domain.ports.LocationResolver;
 import com.fulfilment.application.monolith.warehouses.domain.ports.WarehouseStore;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,9 +16,9 @@ public class CreateWarehouseUseCase implements CreateWarehouseOperation {
   private final WarehouseValidator validator;
 
   @Inject
-  public CreateWarehouseUseCase(WarehouseStore warehouseStore, WarehouseValidator validator) {
+  public CreateWarehouseUseCase(WarehouseStore warehouseStore, LocationResolver locationResolver) {
     this.warehouseStore = warehouseStore;
-    this.validator = validator;
+    this.validator = new WarehouseValidator(locationResolver, warehouseStore);
   }
 
   @Override
