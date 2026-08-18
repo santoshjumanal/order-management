@@ -1,0 +1,43 @@
+# Build and compilation
+target/
+*.class
+*.jar
+*.war
+
+# IDE configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.DS_Store
+*.log
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Testing
+jacoco.exec
+*.coverage
+
+# Local environment
+.env
+.env.local
+
+# OS files
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+npm-debug.log
