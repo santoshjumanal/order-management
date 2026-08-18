@@ -82,6 +82,45 @@ Navigate to:
 
 Have fun, and join the team of contributors!
 
+## Implementation Summary
+
+This assignment implements the following features:
+
+### 1. Location Management
+- `LocationGateway.resolveByIdentifier()` - Resolves locations by their identifier
+
+### 2. Store Management  
+- Store creation, update (PUT), and partial update (PATCH) operations
+- **Key Design Pattern**: Transaction separation - database operations complete and commit before calling the legacy system gateway, ensuring data consistency across systems
+
+### 3. Warehouse Management
+- Full CRUD operations for warehouse units with business rule validation:
+  - **Business Unit Code Verification**: Ensures unique warehouse codes
+  - **Location Validation**: Confirms location exists and is valid
+  - **Warehouse Creation Feasibility**: Checks if maximum warehouses limit reached
+  - **Capacity and Stock Validation**: Ensures capacity doesn't exceed location limits
+  - **Replacement Constraints**: Validates new warehouse can accommodate previous stock
+
+### 4. Fulfillment Units (BONUS)
+- Associates products with warehouses in stores with the following constraints:
+  - Each product can be fulfilled by maximum 2 different warehouses per store
+  - Each store can be fulfilled by maximum 3 different warehouses  
+  - Each warehouse can store maximum 5 different product types
+
+## Architecture Notes
+
+- **Database Access**: Uses both active-record pattern (Store, Product) and repository pattern (Warehouse) for different levels of complexity
+- **Transaction Management**: Critical operations are separated into transactional helper methods to ensure database commits complete before external system calls
+- **API Contracts**: Warehouse API uses OpenAPI specification for contract-first development
+
 ## Troubleshooting
 
 Using **IntelliJ**, in case the generated code is not recognized and you have compilation failures, you may need to add `target/.../jaxrs` folder as "generated sources".
+
+### Build Issues
+If you encounter "@Transactional annotation on private method" errors, ensure that Quarkus configurations are properly set:
+```properties
+quarkus.arc.fail-on-intercepted-private-method=false
+```
+
+This is already configured in the project. Transactional methods must be package-private or public for Quarkus to properly apply transaction proxying.

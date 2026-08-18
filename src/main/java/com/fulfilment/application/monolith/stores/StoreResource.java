@@ -47,27 +47,60 @@ public class StoreResource {
   }
 
   @POST
-  @Transactional
   public Response create(Store store) {
     if (store.id != null) {
       throw new WebApplicationException("Id was invalidly set on request.", 422);
     }
 
-    store.persist();
+    // Persist to database in a transaction and get the confirmed entity
+    Store persistedStore = persistStore(store);
 
-    legacyStoreManagerGateway.createStoreOnLegacySystem(store);
+    // Call legacy system AFTER transaction commits to guarantee data consistency
+    legacyStoreManagerGateway.createStoreOnLegacySystem(persistedStore);
 
-    return Response.ok(store).status(201).build();
+    return Response.ok(persistedStore).status(201).build();
   }
 
   @PUT
   @Path("{id}")
-  @Transactional
   public Store update(Long id, Store updatedStore) {
     if (updatedStore.name == null) {
       throw new WebApplicationException("Store Name was not set on request.", 422);
     }
 
+    // Update database in a transaction and get the confirmed entity
+    Store entity = updateStoreInDatabase(id, updatedStore);
+
+    // Call legacy system AFTER transaction commits to guarantee data consistency
+    legacyStoreManagerGateway.updateStoreOnLegacySystem(entity);
+
+    return entity;
+  }
+
+  @PATCH
+  @Path("{id}")
+  public Store patch(Long id, Store updatedStore) {
+    if (updatedStore.name == null) {
+      throw new WebApplicationException("Store Name was not set on request.", 422);
+    }
+
+    // Patch database in a transaction and get the confirmed entity
+    Store entity = patchStoreInDatabase(id, updatedStore);
+
+    // Call legacy system AFTER transaction commits to guarantee data consistency
+    legacyStoreManagerGateway.updateStoreOnLegacySystem(entity);
+
+    return entity;
+  }
+
+  @Transactional
+  Store persistStore(Store store) {
+    store.persist();
+    return store;
+  }
+
+  @Transactional
+  Store updateStoreInDatabase(Long id, Store updatedStore) {
     Store entity = Store.findById(id);
 
     if (entity == null) {
@@ -77,19 +110,11 @@ public class StoreResource {
     entity.name = updatedStore.name;
     entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
 
-    legacyStoreManagerGateway.updateStoreOnLegacySystem(updatedStore);
-
     return entity;
   }
 
-  @PATCH
-  @Path("{id}")
   @Transactional
-  public Store patch(Long id, Store updatedStore) {
-    if (updatedStore.name == null) {
-      throw new WebApplicationException("Store Name was not set on request.", 422);
-    }
-
+  Store patchStoreInDatabase(Long id, Store updatedStore) {
     Store entity = Store.findById(id);
 
     if (entity == null) {
@@ -103,8 +128,6 @@ public class StoreResource {
     if (entity.quantityProductsInStock != 0) {
       entity.quantityProductsInStock = updatedStore.quantityProductsInStock;
     }
-
-    legacyStoreManagerGateway.updateStoreOnLegacySystem(updatedStore);
 
     return entity;
   }
