@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 public class ProductEndpointTest {
 
+
   @Test
   public void testCrudProduct() {
     final String path = "product";
@@ -21,14 +22,29 @@ public class ProductEndpointTest {
             .statusCode(200)
             .body(containsString("TONSTAD"), containsString("KALLAX"), containsString("BESTÅ"));
 
-    given().when().delete(path + "/1").then().statusCode(204);
+    // Create a disposable product instead of deleting seeded product 1,
+    // which may be referenced by fulfillment_unit rows created by other tests.
+    String createPayload = "{\"name\":\"TO-DELETE-CRUD\",\"stock\":1}";
+    Long id =
+            given()
+                    .contentType("application/json")
+                    .body(createPayload)
+                    .when()
+                    .post(path)
+                    .then()
+                    .statusCode(201)
+                    .extract()
+                    .jsonPath()
+                    .getLong("id");
+
+    given().when().delete(path + "/" + id).then().statusCode(204);
 
     given()
             .when()
             .get(path)
             .then()
             .statusCode(200)
-            .body(not(containsString("TONSTAD")), containsString("KALLAX"), containsString("BESTÅ"));
+            .body(not(containsString("TO-DELETE-CRUD")), containsString("KALLAX"), containsString("BESTÅ"));
   }
 
   @Test
